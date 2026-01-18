@@ -9,4 +9,4 @@ setup = {custom_status} {role}
 
 setup_counter (send a embed, essential for counter members) 
 
-embed_edit (like the name says, you can edit the embed as you want)
+embed_edit (like the name says, you can edit the embed as you want).

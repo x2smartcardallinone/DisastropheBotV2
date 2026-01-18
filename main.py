@@ -34,7 +34,7 @@ def save_setups():
     with open('setups.json', 'w') as f:
         json.dump(SETUPS, f)
 
-# Member Count Embed Config
+# Member Count Embed Config (Mimu style)
 try:
     with open('counter_config.json', 'r') as f:
         config = json.load(f)
@@ -127,6 +127,22 @@ async def update_embed(guild):
         except:
             EMBED_MESSAGE = None
 
+from flask import Flask
+from threading import Thread
+
+app = Flask('')
+
+@app.route('/')
+def home():
+    return "Bot activo"
+
+def run_flask():
+    app.run(host='0.0.0.0', port=8080)
+
+def keep_alive():
+    t = Thread(target=run_flask)
+    t.start()
+
 # --- Modals ---
 
 class BasicModal(ui.Modal, title="Edit Basic Information"):
@@ -202,7 +218,7 @@ async def on_ready():
     await bot.tree.sync()
     print(f"Conectado como {bot.user}")
 
-@bot.tree.command(name="embed_edit", description="Edit embed dashboard")
+@bot.tree.command(name="embed_edit", description="Edit embed dashboard (Mimu style)")
 @app_commands.checks.has_permissions(administrator=True)
 async def embed_edit(interaction: discord.Interaction):
     global EMBED_MESSAGE
@@ -260,5 +276,7 @@ async def on_presence_update(before, after):
         elif not has_match and role in after.roles: await after.remove_roles(role)
     except: pass
 
-if TOKEN: bot.run(TOKEN)
+if TOKEN: 
+    keep_alive()
+    bot.run(TOKEN)
 else: print("Error: DISCORD_BOT_TOKEN not found.")

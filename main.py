@@ -224,7 +224,7 @@ async def on_ready():
     await bot.tree.sync()
     print(f"Conectado como {bot.user}")
 
-@bot.tree.command(name="embed_edit", description="Edit embed dashboard (Mimu style)")
+@bot.tree.command(name="embed_edit", description="Edit embed dashboard")
 @app_commands.checks.has_permissions(administrator=True)
 async def embed_edit(interaction: discord.Interaction):
     global EMBED_MESSAGE

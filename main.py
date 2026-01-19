@@ -134,21 +134,19 @@ async def update_embed(guild):
 
 from flask import Flask
 from threading import Thread
-import os
 
-app = Flask(__name__)
+app = Flask('')
 
-@app.route("/")
+@app.route('/')
 def home():
     return "Bot activo"
 
 def run_flask():
-    port = int(os.environ.get("PORT", 8080))
-    app.run(host="0.0.0.0", port=port)
+    app.run(host='0.0.0.0', port=8080)
 
 def keep_alive():
-    Thread(target=run_flask, daemon=True).start()
-
+    t = Thread(target=run_flask)
+    t.start()
 
 # --- Modals ---
 
@@ -240,15 +238,19 @@ async def embed_edit(interaction: discord.Interaction):
 @app_commands.checks.has_permissions(administrator=True)
 async def setup_counter(interaction: discord.Interaction):
     global COUNTER_MESSAGE_ID
-    await interaction.response.defer(ephemeral=True)
+    # Removed defer to prevent "Unknown interaction" error if Render/Discord delay happens
     channel = bot.get_channel(COUNTER_CHANNEL_ID)
     if not channel:
-        await interaction.followup.send("❌ No se encontró el canal de contador.", ephemeral=True)
+        await interaction.response.send_message("❌ No se encontró el canal de contador.", ephemeral=True)
         return
-    msg = await channel.send(embed=render_embed(interaction.guild))
-    COUNTER_MESSAGE_ID = msg.id
-    save_counter_config()
-    await interaction.followup.send(f"✅ Contador configurado en {channel.mention}", ephemeral=True)
+    
+    try:
+        msg = await channel.send(embed=render_embed(interaction.guild))
+        COUNTER_MESSAGE_ID = msg.id
+        save_counter_config()
+        await interaction.response.send_message(f"✅ Contador configurado en {channel.mention}", ephemeral=True)
+    except Exception as e:
+        await interaction.response.send_message(f"❌ Error al enviar el mensaje: {e}", ephemeral=True)
 
 @bot.event
 async def on_member_join(member):

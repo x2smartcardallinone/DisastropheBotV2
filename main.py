@@ -73,7 +73,12 @@ def save_counter_config():
         }, f)
 
 def render_embed(guild):
-    data = {"member_count": guild.member_count}
+    # Count humans (non-bots)
+    humans = len([m for m in guild.members if not m.bot])
+    data = {
+        "member_count": guild.member_count,
+        "human_count": humans
+    }
     
     title = EMBED_DATA["title"].format(**data) if EMBED_DATA["title"] else None
     desc = EMBED_DATA["description"].format(**data) if EMBED_DATA["description"] else None
@@ -129,21 +134,19 @@ async def update_embed(guild):
 
 from flask import Flask
 from threading import Thread
-import os
 
-app = Flask(__name__)
+app = Flask('')
 
-@app.route("/")
+@app.route('/')
 def home():
     return "Bot activo"
 
 def run_flask():
-    port = int(os.environ.get("PORT", 8080))
-    app.run(host="0.0.0.0", port=port)
+    app.run(host='0.0.0.0', port=8080)
 
 def keep_alive():
-    Thread(target=run_flask, daemon=True).start()
-
+    t = Thread(target=run_flask)
+    t.start()
 
 # --- Modals ---
 
